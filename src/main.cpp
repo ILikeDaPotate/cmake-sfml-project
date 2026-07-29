@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include "events.hpp"
 
 int main()
 {
@@ -8,11 +9,7 @@ int main()
 
 	while ( window.isOpen() )
 	{
-		while ( const std::optional event = window.pollEvent() )
-		{
-			if ( event->is<sf::Event::Closed>() )
-				window.close();
-		}
+		processEvents(window);
 
 		window.clear();
 		window.draw( shape );
