@@ -1,20 +1,24 @@
 #include <SFML/Graphics.hpp>
 #include "events.hpp"
 #include "configuration.hpp"
+#include "ui_generator.hpp"
 
 int main()
 {
 	sf::RenderWindow window( sf::VideoMode( { conf::window_size.x, conf::window_size.y } ), "SFML works!" );
 	window.setFramerateLimit(conf::max_framerate);
-	sf::CircleShape shape( 100.f );
-	shape.setFillColor( sf::Color::Yellow );
+
+	gui::Point point(6.0, sf::Vector2f{500.0, 20.0});
+	
 
 	while ( window.isOpen() )
 	{
-		processEvents(window);
+		processEvents(window, point);
 
 		window.clear();
-		window.draw( shape );
+
+		point.draw(window);
+
 		window.display();
 	}
 }

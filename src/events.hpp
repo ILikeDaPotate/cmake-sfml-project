@@ -1,4 +1,6 @@
 #pragma once
 #include <SFML/Window.hpp>
 
-void processEvents(sf::Window& window);
+namespace gui { class Point; }
+
+void processEvents(sf::Window& window, gui::Point& point);
