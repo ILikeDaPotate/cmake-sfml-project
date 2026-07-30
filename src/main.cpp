@@ -5,6 +5,9 @@
 
 int main()
 {
+	sf::ContextSettings settings;
+	settings.antiAliasingLevel = conf::antialiasing_level;
+
 	sf::RenderWindow window( sf::VideoMode( { conf::window_size.x, conf::window_size.y } ), "SFML works!" );
 	window.setFramerateLimit(conf::max_framerate);
 
@@ -15,7 +18,7 @@ int main()
 	{
 		processEvents(window, point);
 
-		window.clear();
+		window.clear(conf::background_color);
 
 		point.draw(window);
 		roundedRectangle.draw(window);
