@@ -3,17 +3,39 @@
 
 constexpr float pi{3.141592};
 
+float constexpr point_radius{5.0};
+
+// Anonymous namespace only lets this file use the class inside it
+namespace 
+{
+	class CircleGenerator {
+		public:
+			CircleGenerator(float radius_, uint32_t quality) 
+			:
+				radius{radius_},
+				da{static_cast<float>((2.0 * pi)) / static_cast<float>(quality)}
+			{ }
+
+			sf::Vector2f GetIthPoint(uint32_t i) {
+				float const angle{da * i};
+				return (radius * sf::Vector2f{cosf(angle), sinf(angle)});
+			}
+
+		private:
+			float radius;
+			float da;
+	};
+}
+
 namespace gui 
 {
 	#pragma region Point Class
 
-	Point::Point(float radius, sf::Vector2f position) {
-		shape.setRadius(radius);
-		shape.setOrigin(sf::Vector2f{radius, radius});
+	Point::Point(sf::Vector2f position, sf::Color color) {
+		shape.setRadius(point_radius);
+		shape.setOrigin(sf::Vector2f{point_radius, point_radius});
 		shape.setPosition(position);
-		shape.setFillColor(sf::Color::Transparent);
-		shape.setOutlineThickness(outlineThickness);
-		shape.setOutlineColor(sf::Color::White);
+		shape.setFillColor(color);
 	}
 
 	void Point::setPosition(sf::Vector2f position) {
@@ -50,12 +72,11 @@ namespace gui
 	}
 
 	void RoundedRectangle::GenerateVertices() {
-		float da{static_cast<float>((2.0 * pi)) / static_cast<float>((quality - 1) * 4)};
-
+		CircleGenerator circle(radius, (quality - 1) * 4);
+		
 		for (uint32_t i{0}; i < quality * 4; ++i) {
 			uint32_t const corner_id{i / quality};
-			float const angle{da * (i - corner_id)};
-			vertex_array[i].position = position + centers[corner_id] + (radius * sf::Vector2f{cosf(angle), sinf(angle)});
+			vertex_array[i].position = position + centers[corner_id] + circle.GetIthPoint(i - corner_id);
 			vertex_array[i].color = color;
 		}
 	}

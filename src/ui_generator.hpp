@@ -4,13 +4,14 @@
 
 namespace sf { class RenderWindow; } // Forward-declare RenderWindow; it will be defined in the cpp file
 
-float const outlineThickness = 3.0;
+
+
 
 namespace gui
 {
 	class Point : public sf::Drawable {
 		public:
-			Point( float radius, sf::Vector2f position);
+			Point(sf::Vector2f position, sf::Color color = sf::Color::White);
 			void setPosition(sf::Vector2f position);
 		private:
 			virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
