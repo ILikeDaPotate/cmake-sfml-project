@@ -5,6 +5,8 @@ constexpr float pi{3.141592};
 
 namespace gui 
 {
+	#pragma region Point Class
+
 	Point::Point(float radius, sf::Vector2f position) {
 		shape.setRadius(radius);
 		shape.setOrigin(sf::Vector2f{radius, radius});
@@ -17,26 +19,24 @@ namespace gui
 	void Point::setPosition(sf::Vector2f position) {
 		shape.setPosition(position);
 	}
-	/*
-	void Point::draw(sf::RenderWindow& window) {
-		window.draw(shape);
-	} */
 
 	void Point::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     	target.draw(shape, states);
 	}
 
-	/////////////////////////////////////////////////////
-	
+	#pragma endregion
+
+	#pragma region Rounded Rectangle Class
 
 	/*
 		* @param quality_ The number of sides on each corner
 	*/
-	RoundedRectangle::RoundedRectangle(sf::Vector2f size, float radius_, sf::Vector2f position_, uint32_t quality_) 
+	RoundedRectangle::RoundedRectangle(sf::Vector2f size, float radius_, sf::Vector2f position_, uint32_t quality_, sf::Color color_) 
 		:
 		radius{radius_},
 		position{position_},
 		quality{quality_},
+		color{color_},
 		centers{
 			{size.x - radius, size.y - radius}, // Bottom right
 			{radius, size.y - radius},          // Bottom left
@@ -56,18 +56,46 @@ namespace gui
 			uint32_t const corner_id{i / quality};
 			float const angle{da * (i - corner_id)};
 			vertex_array[i].position = position + centers[corner_id] + (radius * sf::Vector2f{cosf(angle), sinf(angle)});
+			vertex_array[i].color = color;
 		}
 	}
 
-	sf::Vector2f RoundedRectangle::GetIthVertex(uint32_t i){
-		float da{static_cast<float>((2.0 * pi)) / static_cast<float>((quality - 1) * 4)};
-
-		uint32_t const corner_id{i / quality};
-		float const angle{da * (i - corner_id)};
-		return position + centers[corner_id] + (radius * sf::Vector2f{cosf(angle), sinf(angle)});
+	sf::Vertex RoundedRectangle::GetIthVertex(uint32_t i){
+		return vertex_array[i];
 	}
 
 	void RoundedRectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const {
     	target.draw(vertex_array, states);
 	}
+
+	#pragma endregion
+
+	#pragma region Rounded Rectangle Outline Class
+
+	/*
+		* @note inner_color and outer_color are optional parameters which are mostly useful for shadows
+	*/
+	RoundedRectangleOutline::RoundedRectangleOutline(sf::Vector2f size, float radius, sf::Vector2f position, uint32_t quality, 
+		float thickness, sf::Color inner_color, sf::Color outer_color) 
+		:
+			vertex_array{sf::PrimitiveType::TriangleStrip, quality * 4 * 2 + 2}
+	{
+		RoundedRectangle inner(size, radius, position, quality, inner_color);
+		RoundedRectangle outer({size.x + 2 * thickness, size.y + 2 * thickness}, radius + thickness, {position.x - thickness, position.y - thickness}, quality, outer_color);
+
+		for (uint32_t i{0}; i < quality * 4; ++i) {
+			vertex_array[i * 2] = inner.GetIthVertex(i);
+			vertex_array[i * 2 + 1] = outer.GetIthVertex(i);
+		}
+
+		// Connect the last corner to the first
+		vertex_array[quality * 4 * 2] = inner.GetIthVertex(0);
+		vertex_array[quality * 4 * 2 + 1] = outer.GetIthVertex(0);
+	}
+
+	void RoundedRectangleOutline::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    	target.draw(vertex_array, states);
+	}
+
+	#pragma endregion
 }
