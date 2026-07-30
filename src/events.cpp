@@ -25,7 +25,7 @@ void processEvents(sf::Window& window, gui::Point& point) {
 						<< mousePressed->position.y << "\n";
 
 				sf::Vector2f mousePos_f = static_cast<sf::Vector2f>(mousePressed->position);
-				point.setPosition(mousePos_f);
+				point = gui::Point(mousePos_f, sf::Color(mousePos_f.x, mousePos_f.y, sf::Mouse::ButtonCount * 20));
 			}
 		}
 	}

@@ -4,19 +4,34 @@
 
 namespace sf { class RenderWindow; } // Forward-declare RenderWindow; it will be defined in the cpp file
 
-
-
-
 namespace gui
 {
+	class CircleGenerator {
+		public:
+			CircleGenerator(float radius_, uint32_t quality);
+
+			sf::Vector2f GetIthPoint(uint32_t i);
+
+		private:
+			float radius;
+			float da;
+	};
+
 	class Point : public sf::Drawable {
 		public:
 			Point(sf::Vector2f position, sf::Color color = sf::Color::White);
-			void setPosition(sf::Vector2f position);
+
+			static int constexpr quality = 20;
+			static float constexpr shape_radius = 15.0;
+			static float constexpr shadow_radius = 30.0;
+			static sf::Color constexpr shadow_col = sf::Color(0, 0, 0, 60);
 		private:
 			virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-			sf::CircleShape shape; 
+			sf::VertexArray shape;
+			CircleGenerator innerCircle;
+			sf::VertexArray shadow;
+			CircleGenerator outerCircle;
 	};
 
 	class RoundedRectangle : public sf::Drawable {

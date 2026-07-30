@@ -11,11 +11,11 @@ int main()
 	sf::RenderWindow window( sf::VideoMode( { conf::window_size.x, conf::window_size.y } ), "SFML works!", sf::Style::Default, sf::State::Windowed, settings );
 	window.setFramerateLimit(conf::max_framerate);
 
-	gui::Point point({500.0, 20.0}, sf::Color(255, 195, 64));
+	gui::Point point({500.0, 80.0}, sf::Color(255, 195, 64));
 
 	gui::RoundedRectangle box({500.0, 300.0}, 20.0, {300.0, 300.0}, 6, sf::Color(255, 76, 64));
 	gui::RoundedRectangleOutline boxOutline({500.0, 300.0}, 20.0, {300.0, 300.0}, 6, -5.0);
-	gui::RoundedRectangleOutline boxShadow({500.0, 300.0}, 20.0, {300.0, 300.0}, 6, 15.0, sf::Color(0, 0, 0, 50), sf::Color::Transparent);
+	gui::RoundedRectangleOutline boxShadow({500.0, 300.0}, 20.0, {300.0, 300.0}, 6, 15.0, sf::Color(0, 0, 0, 80), sf::Color::Transparent);
 
 	while ( window.isOpen() )
 	{

@@ -7,5 +7,5 @@ namespace conf
 	sf::Vector2f const window_size_f = static_cast<sf::Vector2f>(window_size);
 	uint32_t const max_framerate = 144;
 	unsigned int antialiasing_level = 8;
-	sf::Color background_color = sf::Color(44, 49, 64);
+	sf::Color background_color = sf::Color(130, 143, 161);
 }

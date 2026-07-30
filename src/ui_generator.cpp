@@ -1,48 +1,55 @@
 #include "ui_generator.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 
-constexpr float pi{3.141592};
-
-float constexpr point_radius{5.0};
-
-// Anonymous namespace only lets this file use the class inside it
-namespace 
-{
-	class CircleGenerator {
-		public:
-			CircleGenerator(float radius_, uint32_t quality) 
-			:
-				radius{radius_},
-				da{static_cast<float>((2.0 * pi)) / static_cast<float>(quality)}
-			{ }
-
-			sf::Vector2f GetIthPoint(uint32_t i) {
-				float const angle{da * i};
-				return (radius * sf::Vector2f{cosf(angle), sinf(angle)});
-			}
-
-		private:
-			float radius;
-			float da;
-	};
-}
+float constexpr pi{3.141592};
 
 namespace gui 
 {
-	#pragma region Point Class
+	CircleGenerator::CircleGenerator(float radius_, uint32_t quality) 
+		:
+			radius{radius_},
+			da{static_cast<float>((2.0 * pi)) / static_cast<float>(quality)}
+	{ }
 
-	Point::Point(sf::Vector2f position, sf::Color color) {
-		shape.setRadius(point_radius);
-		shape.setOrigin(sf::Vector2f{point_radius, point_radius});
-		shape.setPosition(position);
-		shape.setFillColor(color);
+	sf::Vector2f CircleGenerator::GetIthPoint(uint32_t i) {
+		float const angle{da * i};
+		return (radius * sf::Vector2f{cosf(angle), sinf(angle)});
 	}
 
-	void Point::setPosition(sf::Vector2f position) {
-		shape.setPosition(position);
+	#pragma region Point Class
+
+	/*
+		* A circle with shadow
+	*/
+	Point::Point(sf::Vector2f position, sf::Color color) 
+	:
+		shape{sf::PrimitiveType::TriangleFan, quality},
+		innerCircle{shape_radius, quality},
+		shadow{sf::PrimitiveType::TriangleStrip, quality * 2 + 2},
+		outerCircle{shadow_radius, quality}
+	{
+
+		// Create the point
+		for (uint32_t i{0}; i < quality; ++i) {
+			shape[i].position = position + innerCircle.GetIthPoint(i);
+			shape[i].color = color;
+		}
+
+		// Create the shadow
+		for (uint32_t i{0}; i < quality; ++i) {
+			shadow[i * 2].position = position + innerCircle.GetIthPoint(i);
+			shadow[i * 2].color = shadow_col;
+			shadow[i * 2 + 1].position = position + outerCircle.GetIthPoint(i);
+			shadow[i * 2 + 1].color = sf::Color::Transparent;
+		}
+		shadow[quality * 2].position = position + innerCircle.GetIthPoint(0);
+		shadow[quality * 2].color = shadow_col;
+		shadow[quality * 2 + 1].position = position + outerCircle.GetIthPoint(0);
+		shadow[quality * 2 + 1].color = sf::Color::Transparent;
 	}
 
 	void Point::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+		target.draw(shadow, states);
     	target.draw(shape, states);
 	}
 
@@ -73,7 +80,7 @@ namespace gui
 
 	void RoundedRectangle::GenerateVertices() {
 		CircleGenerator circle(radius, (quality - 1) * 4);
-		
+
 		for (uint32_t i{0}; i < quality * 4; ++i) {
 			uint32_t const corner_id{i / quality};
 			vertex_array[i].position = position + centers[corner_id] + circle.GetIthPoint(i - corner_id);
