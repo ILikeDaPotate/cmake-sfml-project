@@ -20,8 +20,8 @@ int main()
 
 		window.clear(conf::background_color);
 
-		point.draw(window);
-		roundedRectangle.draw(window);
+		window.draw(point);
+		window.draw(roundedRectangle);
 
 		window.display();
 	}

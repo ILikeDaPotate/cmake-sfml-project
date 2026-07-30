@@ -17,19 +17,26 @@ namespace gui
 	void Point::setPosition(sf::Vector2f position) {
 		shape.setPosition(position);
 	}
-
+	/*
 	void Point::draw(sf::RenderWindow& window) {
 		window.draw(shape);
+	} */
+
+	void Point::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    	target.draw(shape, states);
 	}
 
 	/////////////////////////////////////////////////////
 	
 
 	/*
-		* @param quality The number of sides on each corner
+		* @param quality_ The number of sides on each corner
 	*/
-	RoundedRectangle::RoundedRectangle(sf::Vector2f size, float radius, sf::Vector2f position, uint32_t quality) 
+	RoundedRectangle::RoundedRectangle(sf::Vector2f size, float radius_, sf::Vector2f position_, uint32_t quality_) 
 		:
+		radius{radius_},
+		position{position_},
+		quality{quality_},
 		centers{
 			{size.x - radius, size.y - radius}, // Bottom right
 			{radius, size.y - radius},          // Bottom left
@@ -39,6 +46,10 @@ namespace gui
 		vertex_array{sf::PrimitiveType::TriangleFan, quality * 4}
 	{
 
+		GenerateVertices();
+	}
+
+	void RoundedRectangle::GenerateVertices() {
 		float da{static_cast<float>((2.0 * pi)) / static_cast<float>((quality - 1) * 4)};
 
 		for (uint32_t i{0}; i < quality * 4; ++i) {
@@ -48,7 +59,15 @@ namespace gui
 		}
 	}
 
-	void RoundedRectangle::draw(sf::RenderWindow& window) {
-		window.draw(vertex_array);
+	sf::Vector2f RoundedRectangle::GetIthVertex(uint32_t i){
+		float da{static_cast<float>((2.0 * pi)) / static_cast<float>((quality - 1) * 4)};
+
+		uint32_t const corner_id{i / quality};
+		float const angle{da * (i - corner_id)};
+		return position + centers[corner_id] + (radius * sf::Vector2f{cosf(angle), sinf(angle)});
+	}
+
+	void RoundedRectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    	target.draw(vertex_array, states);
 	}
 }
