@@ -23,6 +23,7 @@ namespace gui
 	}
 
 	/////////////////////////////////////////////////////
+	
 
 	/*
 		* @param quality The number of sides on each corner

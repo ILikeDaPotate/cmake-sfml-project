@@ -8,11 +8,11 @@ int main()
 	sf::ContextSettings settings;
 	settings.antiAliasingLevel = conf::antialiasing_level;
 
-	sf::RenderWindow window( sf::VideoMode( { conf::window_size.x, conf::window_size.y } ), "SFML works!" );
+	sf::RenderWindow window( sf::VideoMode( { conf::window_size.x, conf::window_size.y } ), "SFML works!", sf::Style::Default, sf::State::Windowed, settings );
 	window.setFramerateLimit(conf::max_framerate);
 
 	gui::Point point(6.0, sf::Vector2f{500.0, 20.0});
-	gui::RoundedRectangle roundedRectangle({400.0, 200.0}, 20.0, {300.0, 300.0}, 8);
+	gui::RoundedRectangle roundedRectangle({500.0, 300.0}, 20.0, {300.0, 300.0}, 3);
 
 	while ( window.isOpen() )
 	{
