@@ -16,4 +16,14 @@ namespace gui
 		private:
 			sf::CircleShape shape; 
 	};
+
+	class RoundedRectangle {
+		public:
+			RoundedRectangle(sf::Vector2f size, float radius, sf::Vector2f position, uint32_t quality);
+			void draw(sf::RenderWindow& window); 
+		private:
+			sf::Vector2f centers[4];
+
+			sf::VertexArray vertex_array;
+	};
 }
